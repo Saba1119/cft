@@ -1,0 +1,341 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+
+Description: GO-App services on ECS.
+
+Parameters:
+  GitHubAuthToken:
+    Description: GitHub access token.
+    Type: String
+  RepoOwner:
+    Description: Name of the GitHub user or org who owns the repository.
+    Type: String
+  RepoName:
+    Description: The GitHub repo name.
+    Type: String
+  BranchName:
+    Description: Name of repo branch to watch.
+    Type: String
+  PipelineBucketName:
+    Description: name of the s3 bucket
+    Type: String
+  VPC:
+    Type: AWS::EC2::VPC::Id
+  SubnetA:
+    Type: AWS::EC2::Subnet::Id
+  SubnetB:
+    Type: AWS::EC2::Subnet::Id
+  ContainerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup::Id
+  ServiceName:
+    Type: String
+  ServiceName1:
+    Type: String  
+    # update with the name of the service
+    Description: MyService   
+  ClusterName:
+    Type: String
+  Ecrname:
+    Type: String
+  Codebuildname:
+    Type: String  
+  Codepipelinename:
+    Type: String    
+Resources:
+  ## ECS CLUSTER
+  EcsCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref ClusterName
+  EcrRepository:    
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Ref Ecrname
+      RepositoryPolicyText:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: CodeBuildPushPull
+            Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action:
+              - ecr:GetDownloadUrlForLayer
+              - ecr:BatchGetImage
+              - ecr:BatchCheckLayerAvailability
+              - ecr:PutImage
+              - ecr:InitiateLayerUpload
+              - ecr:UploadLayerPart
+              - ecr:CompleteLayerUpload
+  EcsTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    DependsOn:
+      - EcrRepository
+    Properties:
+      RequiresCompatibilities: 
+         - "FARGATE"    
+      Family: !Ref AWS::StackName
+      NetworkMode: "awsvpc"
+      Cpu: 512
+      memory: 1024
+      ContainerDefinitions:
+        - Name: demo-faragte-goapp
+          Image: !Sub ${AWS::AccountId}.dkr.ecr.us-east-1.amazonaws.com/${AWS::StackName}:latest
+          Cpu: 256
+          MemoryReservation: 256
+          Environment:
+          - Name: NODE_ENV
+            Value: production
+      ExecutionRoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/ecsTaskExecutionRole          
+      TaskRoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/ecsTaskExecutionRole
+          # any additional env vars     
+  EcsService:
+    Type: AWS::ECS::Service
+    DependsOn:
+      - EcrRepository
+    Properties:
+      ServiceName: !Ref ServiceName
+      Cluster: !Ref EcsCluster
+      TaskDefinition: !Ref EcsTaskDefinition
+      DesiredCount: 1 # only when creating stack
+      LaunchType: FARGATE # or EC2 if using instances
+      DeploymentConfiguration:
+        MinimumHealthyPercent: 100
+        MaximumPercent: 200
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+            AssignPublicIp: ENABLED
+            Subnets:
+              - !Ref SubnetA
+              - !Ref SubnetB
+            SecurityGroups:
+              - !Ref ContainerSecurityGroup        
+  EcsService1:
+    Type: AWS::ECS::Service
+    DependsOn:
+      - EcrRepository
+    Properties:
+      ServiceName: !Ref ServiceName1
+      Cluster: !Ref EcsCluster
+      TaskDefinition: !Ref EcsTaskDefinition
+      DesiredCount: 1 # only when creating stack
+      LaunchType: FARGATE # or EC2 if using instances
+      DeploymentConfiguration:
+        MinimumHealthyPercent: 100
+        MaximumPercent: 200
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+            AssignPublicIp: ENABLED
+            Subnets:
+              - !Ref SubnetA
+              - !Ref SubnetB
+            SecurityGroups:
+              - !Ref ContainerSecurityGroup               
+  # BUILD
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref PipelineBucketName
+
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Principal:
+              Service: codebuild.amazonaws.com
+      Policies:
+        - PolicyName: S3Access-goapp
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:*
+                Resource:
+                  !Sub
+                    - arn:aws:s3:::${S3Bucket}*
+                    - S3Bucket: !Ref S3Bucket
+        - PolicyName: ServicesAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:*
+                  - codecommit:*
+                  - cloudformation:*
+                  - codebuild:*
+                  - ecr:*
+                Resource: '*'
+
+  CodePipelineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Principal:
+              Service: codepipeline.amazonaws.com
+      Policies:
+        - PolicyName: S3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:*
+                Resource:
+                  !Sub
+                    - arn:aws:s3:::${S3Bucket}/*
+                    - S3Bucket: !Ref S3Bucket
+        - PolicyName: ServicesAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - codepipeline:*
+                  - codebuild:*
+                  - lambda:*
+                  - iam:ListRoles
+                  - iam:PassRole
+                  - ecs:* 
+                  - sns:*
+                Resource: '*'
+  ##  BUILD
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Ref Codebuildname
+      Description: App on ECS.
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Source:
+        Type: CODEPIPELINE
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: linuxContainer
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/amazonlinux2-x86_64-standard:4.0
+        PrivilegedMode: True
+        EnvironmentVariables:
+          - Name: AWS_DEFAULT_REGION 
+            Value: us-east-1
+            Type: PLAINTEXT
+          - Name: REPOSITORY_URI
+            Value: 554248189203.dkr.ecr.us-east-1.amazonaws.com/cft-ecr
+            Type: PLAINTEXT   
+          - Name: IMAGE_TAG
+            Value: latest
+            Type: PLAINTEXT
+          - Name: APP_NAME
+            Value: myteststack-demo-4
+            Type: PLAINTEXT
+          - Name: CONTAINER_NAME
+            Value: demo-faragte-goapp
+            Type: PLAINTEXT
+          - Name: DOCKER_INFO
+            Value: 554248189203.dkr.ecr.us-east-1.amazonaws.com
+            Type: PLAINTEXT        
+      TimeoutInMinutes: 10
+      Tags:
+        - Key: Name
+          Value: !Ref AWS::StackName
+        - Key: role
+          Value: !Ref AWS::StackName
+
+  CodePipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      ArtifactStore:
+        Type: S3
+        Location: !Ref S3Bucket
+      Name: !Ref Codepipelinename
+      RoleArn: !GetAtt CodePipelineRole.Arn
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: Source
+              RunOrder: 1
+              ActionTypeId:
+                Version: 1
+                Category: Source
+                Owner: ThirdParty
+                Provider: GitHub
+              OutputArtifacts:
+                - Name: sourceartifact
+              Configuration:
+                Owner: !Ref RepoOwner
+                Repo: !Ref RepoName
+                Branch: !Ref BranchName
+                OAuthToken: !Ref GitHubAuthToken
+        - Name: Build
+          Actions:
+            - Name: Build
+              RunOrder: 1
+              Configuration:
+                ProjectName: !Ref Codebuildname
+              InputArtifacts: 
+                - Name: sourceartifact
+              ActionTypeId:
+                Version: 1
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+              OutputArtifacts:
+                - Name: buildartifact
+        - Name: Deploy
+          Actions:
+            - Name: Deploy
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Version: 1
+                Provider: ECS
+              Configuration:
+                ClusterName: !Ref ClusterName
+                ServiceName: !Ref ServiceName
+              InputArtifacts:
+                - Name: buildartifact
+              RunOrder: 1    
+        - Name: Mannual_Approval    
+          Actions:
+            - Name: Mannual_Approval 
+              ActionTypeId:
+                Category: Approval
+                Owner: AWS
+                Provider: Manual
+                Version: 1
+              Configuration:
+                NotificationArn: arn:aws:sns:us-east-1:554248189203:pipeline    
+        - Name: DeployToStaging
+          Actions:
+            - Name: DeployToStaging
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Version: 1
+                Provider: ECS
+              Configuration:
+                ClusterName: !Ref ClusterName
+                ServiceName: !Ref ServiceName1
+              InputArtifacts:
+                - Name: buildartifact
+              RunOrder: 2    
+Outputs:
+  EcsClusterName:
+    Description: ECS Cluster Name.
+    Value: !Ref EcsCluster
+
+  ServiceName:
+    Description:  ECS service name.
+    Value: !Ref EcsService 
