@@ -1,0 +1,81 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+
+Description: cft for resources
+
+Parameters:
+  VPC:
+    Type: AWS::EC2::VPC::Id
+  SubnetA:
+    Type: AWS::EC2::Subnet::Id
+  SubnetB:
+    Type: AWS::EC2::Subnet::Id
+  ContainerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup::Id
+  ServiceName:
+    Type: String
+    # update with the name of the service
+    Description: MyService   
+  ClusterName:
+    Type: String
+  Ecrname:
+    Type: String 
+  ImageUri:
+    Type: String  
+Resources:
+  ## ECS CLUSTER
+  EcsCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref ClusterName
+  EcsTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    DependsOn:
+      - EcrRepository
+    Properties:
+      RequiresCompatibilities: 
+         - "FARGATE"    
+      Family: !Ref AWS::StackName
+      NetworkMode: "awsvpc"
+      Cpu: 512
+      memory: 1024
+      ContainerDefinitions:
+        - Name: demo-faragte-goapp
+          Image: !Ref ImageUri
+          Cpu: 256
+          MemoryReservation: 256
+          Environment:
+          - Name: NODE_ENV
+            Value: production
+      ExecutionRoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/ecsTaskExecutionRole          
+      TaskRoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/ecsTaskExecutionRole
+          # any additional env vars     
+  EcsService:
+    Type: AWS::ECS::Service
+    DependsOn:
+      - EcrRepository
+    Properties:
+      ServiceName: !Ref ServiceName
+      Cluster: !Ref EcsCluster
+      TaskDefinition: !Ref EcsTaskDefinition
+      DesiredCount: 1 # only when creating stack
+      LaunchType: FARGATE # or EC2 if using instances
+      DeploymentConfiguration:
+        MinimumHealthyPercent: 100
+        MaximumPercent: 200
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+            AssignPublicIp: ENABLED
+            Subnets:
+              - !Ref SubnetA
+              - !Ref SubnetB
+            SecurityGroups:
+              - !Ref ContainerSecurityGroup        
+Outputs:
+  EcsClusterName:
+    Description: ECS Cluster Name.
+    Value: !Ref EcsCluster
+
+  ServiceName:
+    Description:  ECS service name.
+    Value: !Ref EcsService 
