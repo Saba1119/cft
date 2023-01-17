@@ -27,7 +27,7 @@ Resources:
     Properties:
       PortfolioId: !Ref Portfolio
       PrincipalType: IAM
-      PrincipalARN: !Ref PrincipalArn
+      PrincipalARN: arn:aws:iam::554248189203:user/test-service-saba
 
   Product:
     Type: AWS::ServiceCatalog::CloudFormationProduct
@@ -40,7 +40,7 @@ Resources:
         - Name: '0.1.0'
           Description: Initial product release
           Info:
-            LoadTemplateFromURL: !Ref v010TemplateUrl
+            LoadTemplateFromURL: https://service-catalog-pipeline-demo.s3.amazonaws.com/cft-s3-cloudfront.yaml
   ProductAssociation:
     Type: AWS::ServiceCatalog::PortfolioProductAssociation
     Properties:
