@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Servicecatalog'
+Parameters:
+  PrincipalArn:
+    Type: String
+    Description: >-
+      IAM user, role, or group ARN to grant permission to launch products from the portfolio.
+    AllowedPattern: '^arn:aws.*:iam::\d{12}:(user|group|role)\/.+$'
+  v010TemplateUrl:
+    Type: String
+    Description: >-
+      CloudFormation template URL from S3. Examples:
+      https://my-bucket.s3.us-east-1.amazonaws.com/path/to/template.yml
+      https://my-bucket.s3-us-gov-west-1.amazonaws.com/path/to/template.yml
+    AllowedPattern: '^https?:\/\/.+\.s3.*\.amazonaws\.com\/.+$'
+
+Resources:
+  Portfolio:
+    Type: AWS::ServiceCatalog::Portfolio
+    Properties:
+      DisplayName: example-portfolio
+      Description: !Sub 'Example portfolio created by CloudFormation stack ${AWS::StackName}'
+      ProviderName: !Sub 'CloudFormation-${AWS::StackName}'
+
+  PortfolioPrincipalAssociation:
+    Type: AWS::ServiceCatalog::PortfolioPrincipalAssociation
+    Properties:
+      PortfolioId: !Ref Portfolio
+      PrincipalType: IAM
+      PrincipalARN: !Ref PrincipalArn
+
+  Product:
+    Type: AWS::ServiceCatalog::CloudFormationProduct
+    Properties:
+      Name: example-product
+      Description: !Sub 'Example product created by CloudFormation stack ${AWS::StackName}'
+      Owner: !Sub 'CloudFormation-${AWS::StackName}'
+      # Distributor: String
+      ProvisioningArtifactParameters:
+        - Name: '0.1.0'
+          Description: Initial product release
+          Info:
+            LoadTemplateFromURL: !Ref v010TemplateUrl
+  ProductAssociation:
+    Type: AWS::ServiceCatalog::PortfolioProductAssociation
+    Properties:
+      PortfolioId: !Ref Portfolio
+      ProductId: !Ref Product
