@@ -26,7 +26,7 @@ Resources:
         - Name: '0.1.0'
           Description: Initial product release
           Info:
-            LoadTemplateFromURL: https://service-catalog-pipeline-demo.s3.amazonaws.com/cft-s3-cloudfront.yaml
+            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/cft-s3-cloudfront.yaml
   ProductAssociation:
     Type: AWS::ServiceCatalog::PortfolioProductAssociation
     Properties:
