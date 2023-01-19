@@ -24,7 +24,7 @@ Resources:
         - Name: '0.1.0'
           Description: API with lambda
           Info:
-            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/api2.yaml    
+            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/cft-s3-cloudfront.yaml   
   ProductAssociation:
     Type: AWS::ServiceCatalog::PortfolioProductAssociation
     Properties:
