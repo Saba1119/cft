@@ -18,7 +18,7 @@ Resources:
   Product:
     Type: AWS::ServiceCatalog::CloudFormationProduct
     Properties:
-      Name: example-product
+      Name: s3-product
       Description: !Sub 'Example product created by CloudFormation stack ${AWS::StackName}'
       Owner: !Sub 'CloudFormation-${AWS::StackName}'
       # Distributor: String
@@ -27,6 +27,12 @@ Resources:
           Description: Initial product release
           Info:
             LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/cft-s3-cloudfront.yaml
+   Product:
+    Type: AWS::ServiceCatalog::CloudFormationProduct
+    Properties:          
+      Name: api-product
+      Description: !Sub 'Example product created by CloudFormation stack ${AWS::StackName}'
+      Owner: !Sub 'CloudFormation-${AWS::StackName}'      
       ProvisioningArtifactParameters:
         - Name: '0.2.0'
           Description: API with lambda
