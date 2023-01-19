@@ -14,19 +14,6 @@ Resources:
       PortfolioId: !Ref Portfolio
       PrincipalType: IAM
       PrincipalARN: arn:aws:iam::554248189203:user/test-service-saba
-
-  Product:
-    Type: AWS::ServiceCatalog::CloudFormationProduct
-    Properties:
-      Name: s3-product
-      Description: !Sub 'Example product created by CloudFormation stack ${AWS::StackName}'
-      Owner: !Sub 'CloudFormation-${AWS::StackName}'
-      # Distributor: String
-      ProvisioningArtifactParameters:
-        - Name: '0.1.0'
-          Description: Initial product release
-          Info:
-            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/cft-s3-cloudfront.yaml
   Product:
     Type: AWS::ServiceCatalog::CloudFormationProduct
     Properties:          
@@ -34,7 +21,7 @@ Resources:
       Description: !Sub 'Example product created by CloudFormation stack ${AWS::StackName}'
       Owner: !Sub 'CloudFormation-${AWS::StackName}'      
       ProvisioningArtifactParameters:
-        - Name: '0.2.0'
+        - Name: '0.1.0'
           Description: API with  lambda
           Info:
             LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/api2.yaml    
