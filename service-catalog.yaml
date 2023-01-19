@@ -27,6 +27,11 @@ Resources:
           Description: Initial product release
           Info:
             LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/cft-s3-cloudfront.yaml
+      ProvisioningArtifactParameters:
+        - Name: '0.2.0'
+          Description: API with lambda
+          Info:
+            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/api2.yaml    
   ProductAssociation:
     Type: AWS::ServiceCatalog::PortfolioProductAssociation
     Properties:
