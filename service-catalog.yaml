@@ -27,7 +27,7 @@ Resources:
           Description: Initial product release
           Info:
             LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/cft-s3-cloudfront.yaml
-   Product:
+  Product:
     Type: AWS::ServiceCatalog::CloudFormationProduct
     Properties:          
       Name: api-product
