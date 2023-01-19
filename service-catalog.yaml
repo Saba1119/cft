@@ -22,7 +22,7 @@ Resources:
       Owner: !Sub 'CloudFormation-${AWS::StackName}'      
       ProvisioningArtifactParameters:
         - Name: '0.1.0'
-          Description: API with  lambda
+          Description: API with lambda
           Info:
             LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/api2.yaml    
   ProductAssociation:
