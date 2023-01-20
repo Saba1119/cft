@@ -14,19 +14,61 @@ Resources:
       PortfolioId: !Ref Portfolio
       PrincipalType: IAM
       PrincipalARN: arn:aws:iam::554248189203:user/test-service-saba
-  Product:
+
+  Product1:
     Type: AWS::ServiceCatalog::CloudFormationProduct
-    Properties:          
-      Name: api-product
+    Properties:
+      Name: s3-cdn
       Description: !Sub 'Example product created by CloudFormation stack ${AWS::StackName}'
-      Owner: !Sub 'CloudFormation-${AWS::StackName}'      
+      Owner: !Sub 'CloudFormation-${AWS::StackName}'
+      # Distributor: String
       ProvisioningArtifactParameters:
-        - Name: '0.1.0'
-          Description: API with lambda
+        - Name: '1.0'
+          Description: Initial product release
           Info:
-            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/cft-s3-cloudfront.yaml   
+            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/cft-s3-cloudfront.yaml
+
+  Product2:
+    Type: AWS::ServiceCatalog::CloudFormationProduct
+    Properties:
+      Name: api-lambda
+      Description: !Sub 'Example product created by CloudFormation stack ${AWS::StackName}'
+      Owner: !Sub 'CloudFormation-${AWS::StackName}'
+      # Distributor: String
+      ProvisioningArtifactParameters:
+        - Name: '1.0'
+          Description: Initial product release
+          Info:
+            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/api2.yaml
+
+  Product3:
+    Type: AWS::ServiceCatalog::CloudFormationProduct
+    Properties:
+      Name: ecs-withoutpipeline
+      Description: !Sub 'Example product created by CloudFormation stack ${AWS::StackName}'
+      Owner: !Sub 'CloudFormation-${AWS::StackName}'
+      # Distributor: String
+      ProvisioningArtifactParameters:
+        - Name: '1.0'
+          Description: Initial product release
+          Info:
+            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/cft-ecs-withoutpipeline.yaml
+
+  Product4:
+    Type: AWS::ServiceCatalog::CloudFormationProduct
+    Properties:
+      Name: ecs-withpipeline
+      Description: !Sub 'Example product created by CloudFormation stack ${AWS::StackName}'
+      Owner: !Sub 'CloudFormation-${AWS::StackName}'
+      # Distributor: String
+      ProvisioningArtifactParameters:
+        - Name: '1.0'
+          Description: Initial product release
+          Info:
+            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/cft-ecs-pipeline.yaml
+
   ProductAssociation:
     Type: AWS::ServiceCatalog::PortfolioProductAssociation
     Properties:
       PortfolioId: !Ref Portfolio
-      ProductId: !Ref Product
+      ProductId: !Ref Product1
