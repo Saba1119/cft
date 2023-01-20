@@ -67,8 +67,26 @@ Resources:
           Info:
             LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/cft-ecs-pipeline.yaml
 
-  ProductAssociation:
+  ProductAssociation1:
     Type: AWS::ServiceCatalog::PortfolioProductAssociation
     Properties:
       PortfolioId: !Ref Portfolio
       ProductId: !Ref Product1
+
+  ProductAssociation2:
+    Type: AWS::ServiceCatalog::PortfolioProductAssociation
+    Properties:
+      PortfolioId: !Ref Portfolio
+      ProductId: !Ref Product2
+
+  ProductAssociation3:
+    Type: AWS::ServiceCatalog::PortfolioProductAssociation
+    Properties:
+      PortfolioId: !Ref Portfolio
+      ProductId: !Ref Product3
+
+  ProductAssociation4:
+    Type: AWS::ServiceCatalog::PortfolioProductAssociation
+    Properties:
+      PortfolioId: !Ref Portfolio
+      ProductId: !Ref Product4
