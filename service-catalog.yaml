@@ -4,7 +4,7 @@ Resources:
   Portfolio:
     Type: AWS::ServiceCatalog::Portfolio
     Properties:
-      DisplayName: example-portfolio
+      DisplayName: product-portfolio
       Description: !Sub 'Example portfolio created by CloudFormation stack ${AWS::StackName}'
       ProviderName: !Sub 'CloudFormation-${AWS::StackName}'
 
@@ -41,10 +41,17 @@ Resources:
           Info:
             LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/api2.yaml
 
+        - Name: '1.1'
+          Description: version 2 with minor changes added supporting programming languages
+          Info:
+            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/api2.yaml?versionId=h6fDClw24wmTzXmlKA2bva4JN7L.lYRj      
+
+
+  
   Product3:
     Type: AWS::ServiceCatalog::CloudFormationProduct
     Properties:
-      Name: ecs-withoutpipeline
+      Name: cft-ecs-without-pipeline
       Description: !Sub 'Example product created by CloudFormation stack ${AWS::StackName}'
       Owner: !Sub 'CloudFormation-${AWS::StackName}'
       # Distributor: String
@@ -52,7 +59,7 @@ Resources:
         - Name: '1.0'
           Description: Initial product release
           Info:
-            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/cft-ecs-withoutpipeline.yaml
+            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/cft-ecs-without-pipeline.yaml
 
   Product4:
     Type: AWS::ServiceCatalog::CloudFormationProduct
@@ -65,8 +72,9 @@ Resources:
         - Name: '1.0'
           Description: Initial product release
           Info:
-            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/cft-ecs-pipeline.yaml
+            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/cft-ecs-pipeline.yaml 
 
+        
   ProductAssociation1:
     Type: AWS::ServiceCatalog::PortfolioProductAssociation
     Properties:
