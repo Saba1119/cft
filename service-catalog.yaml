@@ -64,7 +64,7 @@ Resources:
   Product4:
     Type: AWS::ServiceCatalog::CloudFormationProduct
     Properties:
-      Name: ecs-withpipeline
+      Name: ecs-withpipeline.
       Description: !Sub 'Example product created by CloudFormation stack ${AWS::StackName}'
       Owner: !Sub 'CloudFormation-${AWS::StackName}'
       # Distributor: String
