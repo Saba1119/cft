@@ -59,12 +59,12 @@ Resources:
         - Name: '1.0'
           Description: Initial product release
           Info:
-            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/cft-ecs-without-pipeline.yaml
+            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/cft-ecs-without-pipeline.yaml?versionId=4Z437ydhAfNFNQBVp_R4KXzSxqNjDOQA
 
   Product4:
     Type: AWS::ServiceCatalog::CloudFormationProduct
     Properties:
-      Name: ecs-withpipeline.
+      Name: ecs-withpipeline
       Description: !Sub 'Example product created by CloudFormation stack ${AWS::StackName}'
       Owner: !Sub 'CloudFormation-${AWS::StackName}'
       # Distributor: String
@@ -72,7 +72,7 @@ Resources:
         - Name: '1.0'
           Description: Initial product release
           Info:
-            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/cft-ecs-pipeline.yaml 
+            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/cft-ecs-stack.yaml 
 
         
   ProductAssociation1:
