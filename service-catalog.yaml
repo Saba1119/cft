@@ -44,7 +44,7 @@ Resources:
         - Name: '1.1'
           Description: version 2 with minor changes added supporting programming languages
           Info:
-            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/api2.yaml?versionId=h6fDClw24wmTzXmlKA2bva4JN7L.lYRj      
+            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/api2.yaml?versionId=.Livk5GlR4keB9OS_xwvrdcvJaJSnZ1Z      
 
 
   
@@ -72,7 +72,7 @@ Resources:
         - Name: '1.0'
           Description: Initial product release
           Info:
-            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/cft-ecs-stack.yaml 
+            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/cft-ecs-stack.yaml?versionId=IyK_3PIPftDwUPw25x7g7P95tHZD9uQn
 
         
   ProductAssociation1:
