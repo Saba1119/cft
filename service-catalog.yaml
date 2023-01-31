@@ -27,6 +27,14 @@ Resources:
           Description: Initial product release
           Info:
             LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/s3-static.yaml
+            
+            
+        - Name: '1.1'
+          Description: version 2 with minor changes added supporting programming languages
+          Info:
+            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/api2.yaml?versionId=IyK_3PIPftDwUPw25x7g7P95tHZD9uQn     
+            
+            
 
   Product2:
     Type: AWS::ServiceCatalog::CloudFormationProduct
