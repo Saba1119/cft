@@ -39,11 +39,6 @@ Resources:
         - Name: '1.0'
           Description: Initial product release
           Info:
-            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/api2.yaml
-
-        - Name: '1.1'
-          Description: version 2 with minor changes added supporting programming languages
-          Info:
             LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/api2.yaml?versionId=IyK_3PIPftDwUPw25x7g7P95tHZD9uQn     
 
 
@@ -73,6 +68,21 @@ Resources:
           Description: Initial product release
           Info:
             LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/cft-ecs-stack.yaml?versionId=8XN3zc3XKX62GTFytU88ymHtEJ4XAqnR
+            
+            
+  Product5:
+    Type: AWS::ServiceCatalog::CloudFormationProduct
+    Properties:
+      Name: sqs-sns-lamda.
+      Description: !Sub 'Example product created by CloudFormation stack ${AWS::StackName}'
+      Owner: !Sub 'CloudFormation-${AWS::StackName}'
+      # Distributor: String
+      ProvisioningArtifactParameters:
+        - Name: '1.0'
+          Description: Initial product release
+          Info:
+            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/sqs-sns-lamda.yaml        
+            
 
         
   ProductAssociation1:
@@ -98,3 +108,10 @@ Resources:
     Properties:
       PortfolioId: !Ref Portfolio
       ProductId: !Ref Product4
+      
+      
+  ProductAssociation5:
+    Type: AWS::ServiceCatalog::PortfolioProductAssociation
+    Properties:
+      PortfolioId: !Ref Portfolio
+      ProductId: !Ref Product5    
