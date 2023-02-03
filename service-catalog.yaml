@@ -81,7 +81,7 @@ Resources:
         - Name: '1.0'
           Description: Initial product release
           Info:
-            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/sqs-sns-lamda.yaml        
+            LoadTemplateFromURL: https://s3.amazonaws.com/service-catalog-pipeline-demo/sqs-sns-lambda.yaml        
             
 
         
